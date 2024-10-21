@@ -1,16 +1,17 @@
 import TodoItem from "./TodoItem";
 
-const TodoBoard = ({ todoList, updateTask, deleteTask }) => {
+const TodoBoard = ({ todoList, toggleComplete, editTask, deleteTask }) => {
   return (
     <div>
       <h2>Todo List</h2>
       {todoList.length > 0 ? (
         todoList.map((item) => (
           <TodoItem
-            key={item.id}
+            key={item._id}
             item={item}
-            updateTask={updateTask}
+            editTask={editTask}
             deleteTask={deleteTask}
+            toggleComplete={toggleComplete}
           />
         ))
       ) : (

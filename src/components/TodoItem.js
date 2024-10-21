@@ -2,24 +2,21 @@ import { useState } from "react";
 import { Col, Row, Modal, Form } from "react-bootstrap";
 import Button from "./common/Button";
 
-const TodoItem = ({ item, updateTask, deleteTask }) => {
+const TodoItem = ({ item, toggleComplete, editTask, deleteTask }) => {
   const [showModal, setShowModal] = useState(false);
-  const [newTask, setNewTask] = useState(item.task);
-  const [isComplete, setIsComplete] = useState(item.isComplete);
+  const [updatedTask, setUpdatedTask] = useState(item.task);
 
   const handleClickUpdate = () => {
     setShowModal(true);
   };
 
   const handleSaveChanges = () => {
-    updateTask(item._id, { task: newTask, isComplete });
+    editTask(item._id, updatedTask);
     setShowModal(false);
   };
 
-  const toggleComplete = () => {
-    const updatedCompleteStatus = !isComplete;
-    setIsComplete(updatedCompleteStatus);
-    updateTask(item._id, { task: newTask, isComplete: updatedCompleteStatus });
+  const handleToggleComplete = () => {
+    toggleComplete(item._id);
   };
 
   const handleClickDelete = () => {
@@ -30,14 +27,16 @@ const TodoItem = ({ item, updateTask, deleteTask }) => {
     <>
       <Row>
         <Col xs={12}>
-          <div className={`todo-item ${isComplete ? "item-complete" : ""}`}>
+          <div
+            className={`todo-item ${item.isComplete ? "item-complete" : ""}`}
+          >
             <div className="todo-content">{item.task}</div>
 
             <div>
-              <Button onClick={toggleComplete} variant="delete">
-                {isComplete ? "되돌리기" : "완료"}
+              <Button onClick={handleToggleComplete} variant="delete">
+                {item.isComplete ? "되돌리기" : "완료"}
               </Button>
-              {!isComplete && (
+              {!item.isComplete && (
                 <Button onClick={handleClickUpdate} variant="delete">
                   수정
                 </Button>
@@ -60,8 +59,8 @@ const TodoItem = ({ item, updateTask, deleteTask }) => {
               <Form.Label>할 일 수정</Form.Label>
               <Form.Control
                 type="text"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
+                value={updatedTask}
+                onChange={(e) => setUpdatedTask(e.target.value)}
               />
             </Form.Group>
           </Form>
