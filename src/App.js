@@ -1,21 +1,50 @@
+import { useContext } from "react";
+import { AuthContext } from "./states/AuthContext";
+import {
+  Navigate,
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+} from "react-router-dom";
+import TodoPage from "./pages/TodoPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import Header from "./components/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import TodoPage from "./pages/TodoPage";
-import RegisterPage from "./pages/RegisterPage";
+
+const MainLayout = () => (
+  <>
+    <Header />
+    <Outlet />
+  </>
+);
+
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useContext(AuthContext);
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+const router = createBrowserRouter([
+  {
+    element: <MainLayout />,
+    children: [
+      {
+        path: "/",
+        element: (
+          <ProtectedRoute>
+            <TodoPage />
+          </ProtectedRoute>
+        ),
+      },
+      { path: "/login", element: <LoginPage /> },
+      { path: "/register", element: <RegisterPage /> },
+    ],
+  },
+]);
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<TodoPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-
-        <Route path="/login" element={<LoginPage />} />
-      </Routes>
-    </Router>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

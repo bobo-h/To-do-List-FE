@@ -3,7 +3,7 @@ import TodoItem from "./TodoItem";
 const TodoBoard = ({ todoList, toggleComplete, editTask, deleteTask }) => {
   return (
     <div>
-      <h2>Todo List</h2>
+      <h3>목록</h3>
       {todoList.length > 0 ? (
         todoList.map((item) => (
           <TodoItem

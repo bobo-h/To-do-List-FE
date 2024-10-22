@@ -1,36 +1,59 @@
-import React, { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Form from "react-bootstrap/Form";
+import { AuthContext } from "../states/AuthContext";
+import { Form, Modal } from "react-bootstrap";
 import api from "./../utils/api";
 import Button from "./../components/common/Button";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [user, setUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [isLoginSuccess, setIsLoginSuccess] = useState(false);
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!email) {
+      setModalMessage("이메일을 입력해주세요.");
+      setShowModal(true);
+      return;
+    }
+    if (!password) {
+      setModalMessage("패스워드를 입력해주세요.");
+      setShowModal(true);
+      return;
+    }
     try {
       const response = await api.post("/user/login", { email, password });
       if (response.status === 200) {
-        setUser(response.data.user);
-        sessionStorage.setItem("token", response.data.token);
+        login(response.data.token);
         api.defaults.headers["authorization"] = "Bearer " + response.data.token;
-        setError("");
-        navigate("/");
+        setModalMessage("로그인이 완료되었습니다.");
+        setIsLoginSuccess(true);
+        setShowModal(true);
+        return;
       }
       throw new Error(response.message);
     } catch (error) {
-      setError(error.message);
+      const errorMessage = error.error || "로그인에 실패했습니다.";
+      setModalMessage(errorMessage);
+      setIsLoginSuccess(false);
+      setShowModal(true);
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    if (isLoginSuccess) {
+      navigate("/");
     }
   };
 
   return (
     <div className="display-center">
-      {error && <div>{error}</div>}
       <Form className="login-box" onSubmit={handleLogin}>
         <h1>로그인</h1>
         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -59,6 +82,18 @@ const LoginPage = () => {
           </span>
         </div>
       </Form>
+
+      <Modal show={showModal} onHide={handleModalClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>알림</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalMessage}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleModalClose}>
+            확인
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

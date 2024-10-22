@@ -43,8 +43,14 @@ body {
 
 .display-center {
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   height: 100vh;
+  padding-top: 100px;
+}
+
+.error-text {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
 }
