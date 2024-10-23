@@ -1,17 +1,15 @@
-import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../states/AuthContext";
+import { useState } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Form, Modal } from "react-bootstrap";
 import api from "./../utils/api";
 import Button from "./../components/common/Button";
 
-const LoginPage = () => {
+const LoginPage = ({ user, setUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isLoginSuccess, setIsLoginSuccess] = useState(false);
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -29,11 +27,13 @@ const LoginPage = () => {
     try {
       const response = await api.post("/user/login", { email, password });
       if (response.status === 200) {
-        login(response.data.token);
+        setUser(response.data.user);
+        sessionStorage.setItem("token", response.data.token);
         api.defaults.headers["authorization"] = "Bearer " + response.data.token;
         setModalMessage("로그인이 완료되었습니다.");
         setIsLoginSuccess(true);
         setShowModal(true);
+        console.log(isLoginSuccess, showModal);
         return;
       }
       throw new Error(response.message);
@@ -51,6 +51,10 @@ const LoginPage = () => {
       navigate("/");
     }
   };
+
+  if (user) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <div className="display-center">
@@ -89,7 +93,7 @@ const LoginPage = () => {
         </Modal.Header>
         <Modal.Body>{modalMessage}</Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleModalClose}>
+          <Button variant="delete" onClick={handleModalClose}>
             확인
           </Button>
         </Modal.Footer>

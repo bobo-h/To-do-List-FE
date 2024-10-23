@@ -1,11 +1,12 @@
-import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../states/AuthContext";
 import Button from "./common/Button";
 import "./Header.css";
 
-const Header = () => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
+const Header = ({ user, setUser }) => {
+  const handleLogout = () => {
+    sessionStorage.removeItem("token");
+    setUser(null);
+  };
 
   return (
     <header className="app-header">
@@ -13,8 +14,8 @@ const Header = () => {
         <h1>To-Do-List</h1>
       </div>
       <div className="header-right">
-        {isAuthenticated ? (
-          <Button variant="delete" onClick={logout}>
+        {user ? (
+          <Button variant="delete" onClick={handleLogout}>
             로그아웃
           </Button>
         ) : (

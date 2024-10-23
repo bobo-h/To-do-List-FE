@@ -31,7 +31,7 @@ const TodoItem = ({ item, toggleComplete, editTask, deleteTask }) => {
             className={`todo-item ${item.isComplete ? "item-complete" : ""}`}
           >
             <div className="todo-content">{item.task}</div>
-
+            <div>by {item.author ? item.author.name : "Unknown"}</div>
             <div>
               <Button onClick={handleToggleComplete} variant="delete">
                 {item.isComplete ? "되돌리기" : "완료"}
